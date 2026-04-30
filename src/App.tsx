@@ -1,7 +1,18 @@
 import { Globe, Minus, Plus, RotateCcw, Search, Send, Settings } from "lucide-react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
+import { CodeMirrorEditor } from "@/components/code-mirror-editor"
 import { useCounterStore } from "@/stores/counter-store"
+
+const SAMPLE_JSON = `{
+  "name": "demo-workspace",
+  "version": 1,
+  "apis": [
+    { "slug": "users-api", "baseUrl": "https://api.example.com" },
+    { "slug": "billing-api", "baseUrl": "https://billing.example.com" }
+  ]
+}`
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -10,6 +21,8 @@ export default function App() {
   const increment = useCounterStore((state) => state.increment)
   const decrement = useCounterStore((state) => state.decrement)
   const reset = useCounterStore((state) => state.reset)
+
+  const [editorValue, setEditorValue] = useState(SAMPLE_JSON)
 
   const currentLang = i18n.resolvedLanguage ?? i18n.language
 
@@ -93,6 +106,13 @@ export default function App() {
             <Button size="icon" variant="ghost" onClick={reset} aria-label={t("actions.reset")}>
               <RotateCcw />
             </Button>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-foreground">CodeMirror editor (JSON)</p>
+          <div className="border border-border rounded-md overflow-hidden">
+            <CodeMirrorEditor value={editorValue} onChange={setEditorValue} />
           </div>
         </div>
       </div>

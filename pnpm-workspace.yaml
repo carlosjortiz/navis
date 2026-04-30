@@ -1,0 +1,11 @@
+# pnpm settings for the navis project (single-package, no `packages:` field).
+#
+# trustPolicyExclude — surgical whitelist for packages where pnpm's
+# trust-downgrade detection is a known false positive (provenance was
+# never published for older maintenance branches of long-standing libs).
+#
+# - semver: pulled by @babel/core via the shadcn CLI registry. Branch 6.x
+#   predates provenance attestation conventions; not flagged in any
+#   security advisory.
+trustPolicyExclude:
+  - "semver"

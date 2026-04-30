@@ -1,11 +1,34 @@
-import { Minus, Square, X } from "lucide-react"
+import { Copy, Minus, Square, X } from "lucide-react"
+import { useEffect, useState } from "react"
 import { getCurrentWindow } from "@tauri-apps/api/window"
+import { exit } from "@tauri-apps/plugin-process"
 import { Button } from "@/components/ui/button"
 
 export function TitleBar() {
+  const [isMaximized, setIsMaximized] = useState(false)
+
+  useEffect(() => {
+    const appWindow = getCurrentWindow()
+    let unlisten: (() => void) | undefined
+
+    void appWindow.isMaximized().then(setIsMaximized)
+
+    void appWindow
+      .onResized(async () => {
+        setIsMaximized(await appWindow.isMaximized())
+      })
+      .then((fn) => {
+        unlisten = fn
+      })
+
+    return () => {
+      unlisten?.()
+    }
+  }, [])
+
   const handleMinimize = () => getCurrentWindow().minimize()
-  const handleMaximize = () => getCurrentWindow().toggleMaximize()
-  const handleClose = () => getCurrentWindow().close()
+  const handleToggleMaximize = () => getCurrentWindow().toggleMaximize()
+  const handleClose = () => exit(0)
 
   return (
     <div
@@ -25,11 +48,11 @@ export function TitleBar() {
         <Button
           size="icon-sm"
           variant="ghost"
-          onClick={handleMaximize}
-          aria-label="Maximize"
+          onClick={handleToggleMaximize}
+          aria-label={isMaximized ? "Restore" : "Maximize"}
           className="rounded-none"
         >
-          <Square />
+          {isMaximized ? <Copy className="rotate-90" /> : <Square />}
         </Button>
         <Button
           size="icon-sm"

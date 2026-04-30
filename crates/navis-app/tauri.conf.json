@@ -17,7 +17,8 @@
         "url": "workspace-selector.html",
         "width": 600,
         "height": 400,
-        "visible": true
+        "visible": true,
+        "decorations": false
       },
       {
         "label": "main",
@@ -25,7 +26,8 @@
         "url": "/",
         "width": 1280,
         "height": 800,
-        "visible": false
+        "visible": false,
+        "decorations": false
       }
     ],
     "security": {

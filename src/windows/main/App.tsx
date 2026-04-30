@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { CodeMirrorEditor } from "@/components/code-mirror-editor"
+import { TitleBar } from "@/components/title-bar"
 import { useCounterStore } from "@/stores/counter-store"
 
 const SAMPLE_JSON = `{
@@ -27,8 +28,10 @@ export default function App() {
   const currentLang = i18n.resolvedLanguage ?? i18n.language
 
   return (
-    <div className="min-h-screen bg-primary-50 font-sans flex items-center justify-center p-8">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full space-y-6">
+    <div className="flex flex-col h-screen bg-primary-50 font-sans">
+      <TitleBar />
+      <main className="flex-1 overflow-auto flex items-start justify-center p-8">
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-primary-900 mb-2">{t("app.title")}</h1>
           <p className="text-primary-500">{t("app.subtitle")}</p>
@@ -115,7 +118,8 @@ export default function App() {
             <CodeMirrorEditor value={editorValue} onChange={setEditorValue} />
           </div>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   )
 }

@@ -1,0 +1,20 @@
+{
+  "app": {
+    "title": "Hello Navis",
+    "subtitle": "Tailwind 4 + custom theme + shadcn/ui + Lucide + Zustand + i18next working."
+  },
+  "sections": {
+    "standaloneIcons": "Standalone icons",
+    "iconsInsideButton": "Icons inside Button",
+    "iconOnlyButtons": "Icon-only buttons",
+    "zustandCounter": "Zustand counter store",
+    "language": "Language"
+  },
+  "actions": {
+    "sendRequest": "Send request",
+    "search": "Search",
+    "increment": "Increment",
+    "decrement": "Decrement",
+    "reset": "Reset"
+  }
+}

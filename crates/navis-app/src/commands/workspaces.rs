@@ -20,6 +20,7 @@ pub async fn open_workspace(app: AppHandle, slug: String) -> CommandResult<()> {
         .title(format!("Navis — {slug}"))
         .inner_size(1280.0, 800.0)
         .decorations(false)
+        .transparent(true)
         .build()
         .context("failed to build workspace window")?;
 

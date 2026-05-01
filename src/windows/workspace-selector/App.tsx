@@ -17,7 +17,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground font-sans">
+    <div className="flex flex-col h-screen bg-background/80 backdrop-blur-md text-foreground font-sans">
       <TitleBar />
       <main className="flex-1 overflow-auto flex items-center justify-center p-8">
         <div className="bg-card rounded-lg shadow-lg p-8 max-w-md w-full space-y-3 text-center">

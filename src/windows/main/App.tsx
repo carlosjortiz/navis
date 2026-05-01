@@ -28,7 +28,7 @@ export default function App() {
   const currentLang = i18n.resolvedLanguage ?? i18n.language
 
   return (
-    <div className="flex flex-col h-screen bg-primary-50 font-sans">
+    <div className="flex flex-col h-screen bg-background/80 backdrop-blur-md font-sans">
       <TitleBar />
       <main className="flex-1 overflow-auto flex items-start justify-center p-8">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full space-y-6">

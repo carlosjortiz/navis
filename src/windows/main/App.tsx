@@ -1,9 +1,9 @@
 import { Globe, Minus, Plus, RotateCcw, Search, Send, Settings } from "lucide-react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { invoke } from "@tauri-apps/api/core"
 import { Button } from "@/components/ui/button"
 import { CodeMirrorEditor } from "@/components/code-mirror-editor"
-import { SettingsDialog } from "@/components/settings-dialog"
 import { TitleBar } from "@/components/title-bar"
 import { useCounterStore } from "@/stores/counter-store"
 
@@ -24,7 +24,6 @@ export default function App() {
   const decrement = useCounterStore((state) => state.decrement)
   const reset = useCounterStore((state) => state.reset)
 
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [editorValue, setEditorValue] = useState(SAMPLE_JSON)
 
   const currentLang = i18n.resolvedLanguage ?? i18n.language
@@ -87,7 +86,7 @@ export default function App() {
             <Button size="icon" variant="default" aria-label={t("actions.sendRequest")}>
               <Send />
             </Button>
-            <Button size="icon" variant="outline" aria-label={t("settings.title")} onClick={() => setSettingsOpen(true)}>
+            <Button size="icon" variant="outline" aria-label={t("settings.title")} onClick={() => invoke("open_settings")}>
               <Settings />
             </Button>
             <Button size="icon" variant="ghost" aria-label={t("actions.search")}>
@@ -122,7 +121,6 @@ export default function App() {
         </div>
         </div>
       </main>
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   )
 }

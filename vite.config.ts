@@ -16,6 +16,7 @@ export default defineConfig({
       input: {
         main: path.resolve(__dirname, 'index.html'),
         workspaceSelector: path.resolve(__dirname, 'workspace-selector.html'),
+        settings: path.resolve(__dirname, 'settings.html'),
       },
     },
   },

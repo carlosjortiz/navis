@@ -40,6 +40,7 @@ pub fn run() {
     builder
         .invoke_handler(tauri::generate_handler![
             commands::workspaces::open_workspace,
+            commands::settings::open_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

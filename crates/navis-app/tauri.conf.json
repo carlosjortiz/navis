@@ -12,22 +12,13 @@
   "app": {
     "windows": [
       {
-        "label": "workspace-selector",
+        "label": "navis-ws-selector",
         "title": "Navis — Workspace Selector",
         "url": "workspace-selector.html",
         "width": 600,
         "height": 400,
-        "visible": true,
-        "decorations": false
-      },
-      {
-        "label": "main",
-        "title": "Navis",
-        "url": "/",
-        "width": 1280,
-        "height": 800,
-        "visible": false,
-        "decorations": false
+        "decorations": false,
+        "visible": true
       }
     ],
     "security": {

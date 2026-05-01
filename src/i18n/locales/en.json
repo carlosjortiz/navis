@@ -1,4 +1,13 @@
 {
+  "errors": {
+    "notFound": {
+      "workspace": "We couldn't find the workspace \"{{name}}\"",
+      "api": "We couldn't find the API \"{{name}}\"",
+      "endpoint": "We couldn't find the endpoint \"{{name}}\"",
+      "default": "We couldn't find {{entity}} \"{{name}}\""
+    },
+    "internal": "Something went wrong. Please check the logs."
+  },
   "app": {
     "title": "Hello Navis",
     "subtitle": "Tailwind 4 + custom theme + shadcn/ui + Lucide + Zustand + i18next working."

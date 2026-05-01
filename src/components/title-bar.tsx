@@ -1,7 +1,6 @@
 import { Copy, Minus, Square, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getCurrentWindow } from "@tauri-apps/api/window"
-import { exit } from "@tauri-apps/plugin-process"
 import { Button } from "@/components/ui/button"
 
 export function TitleBar() {
@@ -28,7 +27,7 @@ export function TitleBar() {
 
   const handleMinimize = () => getCurrentWindow().minimize()
   const handleToggleMaximize = () => getCurrentWindow().toggleMaximize()
-  const handleClose = () => exit(0)
+  const handleClose = () => getCurrentWindow().close()
 
   return (
     <div

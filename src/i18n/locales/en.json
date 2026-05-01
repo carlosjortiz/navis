@@ -25,5 +25,18 @@
     "increment": "Increment",
     "decrement": "Decrement",
     "reset": "Reset"
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "theme": "Theme",
+      "language": "Language"
+    },
+    "theme": {
+      "placeholder": "Theme settings will be available in a future release."
+    },
+    "language": {
+      "placeholder": "Language settings will be available in a future release."
+    }
   }
 }

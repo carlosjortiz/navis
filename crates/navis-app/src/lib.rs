@@ -1,8 +1,9 @@
 mod commands;
 mod error;
+mod events;
 
 use tauri::Manager;
-use tauri_specta::{Builder, collect_commands};
+use tauri_specta::{Builder, collect_commands, collect_events};
 
 /// Boots the Tauri runtime and runs the Navis application until exit.
 ///
@@ -18,12 +19,14 @@ pub fn run() {
         )
         .init();
 
-    let specta_builder = Builder::<tauri::Wry>::new().commands(collect_commands![
-        commands::workspaces::open_workspace,
-        commands::settings::open_settings,
-        commands::settings::get_settings,
-        commands::settings::save_settings,
-    ]);
+    let specta_builder = Builder::<tauri::Wry>::new()
+        .commands(collect_commands![
+            commands::workspaces::open_workspace,
+            commands::settings::open_settings,
+            commands::settings::get_settings,
+            commands::settings::save_settings,
+        ])
+        .events(collect_events![events::SettingsChanged]);
 
     #[cfg(debug_assertions)]
     specta_builder

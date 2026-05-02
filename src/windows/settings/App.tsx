@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 import { commands, type Language, type Settings, type Theme } from "@/bindings";
 import { TitleBar } from "@/components/title-bar";
@@ -97,12 +98,18 @@ export default function App() {
     const result = await commands.saveSettings(draft);
     if (result.status === "ok") {
       setPersisted(draft);
+      // Skip the unmount revert: persisted now equals draft, but the ref
+      // effect that recomputes this hasn't run yet before the close fires.
+      revertTargetRef.current = null;
+      await getCurrentWindow().close();
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     setDraft(persisted);
     void emitSettingsPreview(persisted);
+    revertTargetRef.current = null;
+    await getCurrentWindow().close();
   };
 
   return (

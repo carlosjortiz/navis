@@ -1,10 +1,12 @@
 import { Globe, Minus, Plus, RotateCcw, Search, Send, Settings } from "lucide-react"
-import { useState } from "react"
+import { useState, type CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
 import { invoke } from "@tauri-apps/api/core"
 import { Button } from "@/components/ui/button"
 import { CodeMirrorEditor } from "@/components/code-mirror-editor"
 import { TitleBar } from "@/components/title-bar"
+import { useApplySettings } from "@/hooks/use-apply-settings"
+import { useSettings } from "@/hooks/use-settings"
 import { useCounterStore } from "@/stores/counter-store"
 
 const SAMPLE_JSON = `{
@@ -19,6 +21,9 @@ const SAMPLE_JSON = `{
 export default function App() {
   const { t, i18n } = useTranslation()
 
+  const settings = useSettings()
+  useApplySettings(settings)
+
   const count = useCounterStore((state) => state.count)
   const increment = useCounterStore((state) => state.increment)
   const decrement = useCounterStore((state) => state.decrement)
@@ -28,8 +33,13 @@ export default function App() {
 
   const currentLang = i18n.resolvedLanguage ?? i18n.language
 
+  const rootStyle = { "--app-opacity": String(settings?.opacity ?? 1) } as CSSProperties
+
   return (
-    <div className="flex flex-col h-screen bg-background/80 backdrop-blur-md font-sans">
+    <div
+      style={rootStyle}
+      className="flex flex-col h-screen bg-[color-mix(in_oklab,var(--background)_calc(var(--app-opacity)*100%),transparent)] backdrop-blur-md font-sans"
+    >
       <TitleBar />
       <main className="flex-1 overflow-auto flex items-start justify-center p-8">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full space-y-6">

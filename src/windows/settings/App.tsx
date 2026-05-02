@@ -75,8 +75,6 @@ export default function App() {
     );
   }
 
-  const isDirty = !settingsEqual(persisted, draft);
-
   const onThemeChange = (theme: Theme) => {
     const next = { ...draft, theme };
     setDraft(next);
@@ -126,16 +124,10 @@ export default function App() {
             onLanguageChange={onLanguageChange}
           />
           <div className="flex justify-end gap-2 pt-4 border-t border-border">
-            <Button
-              variant="secondary"
-              onClick={handleCancel}
-              disabled={!isDirty}
-            >
+            <Button variant="secondary" onClick={handleCancel}>
               {t("actions.cancel")}
             </Button>
-            <Button onClick={handleSave} disabled={!isDirty}>
-              {t("actions.save")}
-            </Button>
+            <Button onClick={handleSave}>{t("actions.save")}</Button>
           </div>
         </div>
       </main>

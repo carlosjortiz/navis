@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/navis-app", "crates/navis-parser"]
+members = ["crates/navis-app", "crates/navis-parser", "crates/navis-runtime"]
 
 [workspace.package]
 edition = "2024"
@@ -17,6 +17,8 @@ tauri-plugin-single-instance = { version = "2", features = ["semver"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 anyhow = "1"
+json5 = "0.4"
+tempfile = "3"
 thiserror = "2"
 tree-sitter = "0.25"
 # path dep — local fork with tree-sitter 0.25 ABI fix; replace once upstream publishes v0.1.1

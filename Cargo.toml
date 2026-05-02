@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/navis-app"]
+members = ["crates/navis-app", "crates/navis-parser"]
 
 [workspace.package]
 edition = "2024"
@@ -18,6 +18,9 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 anyhow = "1"
 thiserror = "2"
+tree-sitter = "0.25"
+# path dep — local fork with tree-sitter 0.25 ABI fix; replace once upstream publishes v0.1.1
+tree-sitter-json5 = { path = "D:/third-party/tree-sitter-json5" }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 

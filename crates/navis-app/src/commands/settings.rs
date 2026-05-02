@@ -1,9 +1,27 @@
 use anyhow::Context as _;
+use navis_runtime::settings::Settings;
 use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 
 use crate::error::CommandResult;
 
+// Settings stays well under 1 KB today, so JSON5 parse + write run inline on
+// the runtime worker. If the file grows past ~10 KB or load/save latency
+// exceeds a few ms, wrap the navis_runtime call in
+// `tauri::async_runtime::spawn_blocking` to free the worker thread.
 #[tauri::command]
+#[specta::specta]
+pub async fn get_settings() -> CommandResult<Settings> {
+    navis_runtime::settings::load_settings().map_err(Into::into)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn save_settings(settings: Settings) -> CommandResult<()> {
+    navis_runtime::settings::save_settings(&settings).map_err(Into::into)
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn open_settings(app: AppHandle) -> CommandResult<()> {
     const LABEL: &str = "navis-settings";
 

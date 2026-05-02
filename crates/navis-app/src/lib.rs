@@ -2,6 +2,7 @@ mod commands;
 mod error;
 
 use tauri::Manager;
+use tauri_specta::{Builder, collect_commands};
 
 /// Boots the Tauri runtime and runs the Navis application until exit.
 ///
@@ -16,6 +17,21 @@ pub fn run() {
                 .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
         )
         .init();
+
+    let specta_builder = Builder::<tauri::Wry>::new().commands(collect_commands![
+        commands::workspaces::open_workspace,
+        commands::settings::open_settings,
+        commands::settings::get_settings,
+        commands::settings::save_settings,
+    ]);
+
+    #[cfg(debug_assertions)]
+    specta_builder
+        .export(
+            specta_typescript::Typescript::default(),
+            "../../src/bindings.ts",
+        )
+        .expect("failed to export typescript bindings");
 
     let mut builder = tauri::Builder::default();
 
@@ -43,10 +59,7 @@ pub fn run() {
     }
 
     builder
-        .invoke_handler(tauri::generate_handler![
-            commands::workspaces::open_workspace,
-            commands::settings::open_settings,
-        ])
+        .invoke_handler(specta_builder.invoke_handler())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

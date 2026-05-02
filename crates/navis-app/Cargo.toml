@@ -17,6 +17,10 @@ anyhow = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+navis-runtime = { path = "../navis-runtime" }
+specta = { workspace = true }
+specta-typescript = { workspace = true }
+tauri-specta = { workspace = true }
 
 [build-dependencies]
 tauri-build = { workspace = true }

@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-#[derive(Debug, thiserror::Error, Serialize)]
+#[derive(Debug, thiserror::Error, Serialize, specta::Type)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub(crate) enum AppError {
     #[allow(dead_code)]

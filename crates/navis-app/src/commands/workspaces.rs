@@ -4,6 +4,7 @@ use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 use crate::error::CommandResult;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn open_workspace(app: AppHandle, slug: String) -> CommandResult<()> {
     let label = format!("navis-{slug}");
 

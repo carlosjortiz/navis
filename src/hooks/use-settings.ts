@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
-import { commands, events, type Settings } from "@/bindings";
+import { commands, type Settings } from "@/bindings";
+import { onSettingsPreview } from "@/lib/settings-events";
 
 const subscribers = new Set<() => void>();
 let snapshot: Settings | null = null;
@@ -11,14 +12,16 @@ const notify = () => {
 
 void (async () => {
   const result = await commands.getSettings();
-  if (result.status === "ok") {
+  // Skip if a preview event already populated the snapshot — it carries fresher
+  // state (the Settings window started editing before getSettings resolved).
+  if (result.status === "ok" && snapshot === null) {
     snapshot = result.data;
     notify();
   }
 })();
 
-void events.settingsChanged.listen((evt) => {
-  snapshot = evt.payload;
+void onSettingsPreview((next) => {
+  snapshot = next;
   notify();
 });
 

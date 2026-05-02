@@ -24,19 +24,34 @@
     "search": "Search",
     "increment": "Increment",
     "decrement": "Decrement",
-    "reset": "Reset"
+    "reset": "Reset",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "settings": {
     "title": "Settings",
-    "tabs": {
-      "theme": "Theme",
-      "language": "Language"
-    },
-    "theme": {
-      "placeholder": "Theme settings will be available in a future release."
+    "loading": "Loading settings…",
+    "appearance": {
+      "title": "Appearance",
+      "theme": {
+        "label": "Theme",
+        "options": {
+          "system": "System",
+          "light": "Light",
+          "dark": "Dark"
+        }
+      },
+      "opacity": {
+        "label": "Window opacity"
+      }
     },
     "language": {
-      "placeholder": "Language settings will be available in a future release."
+      "title": "Language",
+      "label": "Interface language",
+      "options": {
+        "en": "English",
+        "es": "Español"
+      }
     }
   }
 }

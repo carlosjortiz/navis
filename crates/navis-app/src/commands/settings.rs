@@ -1,10 +1,8 @@
 use anyhow::Context as _;
 use navis_runtime::settings::Settings;
 use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
-use tauri_specta::Event as _;
 
 use crate::error::CommandResult;
-use crate::events::SettingsChanged;
 
 // Settings stays well under 1 KB today, so JSON5 parse + write run inline on
 // the runtime worker. If the file grows past ~10 KB or load/save latency
@@ -18,12 +16,8 @@ pub async fn get_settings() -> CommandResult<Settings> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn save_settings(app: AppHandle, settings: Settings) -> CommandResult<()> {
-    navis_runtime::settings::save_settings(&settings).map_err(crate::error::AppError::from)?;
-    SettingsChanged(settings)
-        .emit(&app)
-        .context("failed to broadcast settings-changed event")?;
-    Ok(())
+pub async fn save_settings(settings: Settings) -> CommandResult<()> {
+    navis_runtime::settings::save_settings(&settings).map_err(Into::into)
 }
 
 #[tauri::command]

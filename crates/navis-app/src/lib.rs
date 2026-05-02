@@ -3,6 +3,12 @@ mod error;
 
 use tauri::Manager;
 
+/// Boots the Tauri runtime and runs the Navis application until exit.
+///
+/// # Panics
+///
+/// Panics if the Tauri context fails to initialize or the runtime cannot
+/// be started.
 pub fn run() {
     tracing_subscriber::fmt()
         .with_env_filter(
@@ -27,11 +33,10 @@ pub fn run() {
                     let _ = win.set_focus();
                     return;
                 }
-                for win in app.webview_windows().values() {
+                if let Some(win) = app.webview_windows().values().next() {
                     let _ = win.unminimize();
                     let _ = win.show();
                     let _ = win.set_focus();
-                    break;
                 }
             },
         ));

@@ -126,7 +126,7 @@ mod tests {
 
     #[test]
     fn errors_on_malformed_json5() {
-        let f = write_temp_with(r#"{ key: }"#);
+        let f = write_temp_with(r"{ key: }");
         let err = read_json5::<Settings>(f.path()).unwrap_err();
         assert!(format!("{err:#}").contains("failed to parse"));
     }

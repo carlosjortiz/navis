@@ -253,17 +253,17 @@ mod tests {
     use super::*;
     use navis_parser::parse;
 
-    fn run(source: &str, new: Value) -> String {
+    fn run(source: &str, new: &Value) -> String {
         let tree = parse(source).unwrap();
         let old: Value = json5::from_str(source).unwrap();
-        apply(source, &tree, &old, &new).unwrap()
+        apply(source, &tree, &old, new).unwrap()
     }
 
     #[test]
     fn update_value_preserves_comments() {
         let src = "// hi\n{ a: 1 }";
         let new = serde_json::json!({ "a": 2 });
-        let out = run(src, new);
+        let out = run(src, &new);
         assert_eq!(out, "// hi\n{ a: 2 }");
     }
 
@@ -271,7 +271,7 @@ mod tests {
     fn update_preserves_trailing_comma() {
         let src = "{ a: 1, }";
         let new = serde_json::json!({ "a": 2 });
-        let out = run(src, new);
+        let out = run(src, &new);
         assert_eq!(out, "{ a: 2, }");
     }
 
@@ -279,7 +279,7 @@ mod tests {
     fn nested_update_preserves_outer() {
         let src = "{\n  // top\n  outer: {\n    inner: 1,\n  },\n}";
         let new = serde_json::json!({ "outer": { "inner": 2 } });
-        let out = run(src, new);
+        let out = run(src, &new);
         assert!(out.contains("// top"));
         assert!(out.contains("inner: 2"));
         assert!(!out.contains("inner: 1"));
@@ -289,7 +289,7 @@ mod tests {
     fn no_changes_is_idempotent() {
         let src = "// k\n{ a: 1, b: 2 }";
         let same = serde_json::json!({ "a": 1, "b": 2 });
-        let out = run(src, same);
+        let out = run(src, &same);
         assert_eq!(out, src);
     }
 
@@ -297,7 +297,7 @@ mod tests {
     fn add_key_inserts_before_closing_brace() {
         let src = "{\n  a: 1,\n}";
         let new = serde_json::json!({ "a": 1, "b": 2 });
-        let out = run(src, new);
+        let out = run(src, &new);
         assert!(out.contains("a: 1"));
         assert!(out.contains("b: 2"));
     }
@@ -306,7 +306,7 @@ mod tests {
     fn remove_key_drops_member_and_separator() {
         let src = "{\n  a: 1,\n  b: 2,\n}";
         let new = serde_json::json!({ "a": 1 });
-        let out = run(src, new);
+        let out = run(src, &new);
         assert!(out.contains("a: 1"));
         assert!(!out.contains("b: 2"));
     }

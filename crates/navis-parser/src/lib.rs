@@ -34,7 +34,7 @@ mod tests {
         ],
     }"#;
 
-    const INVALID_JSON5: &str = r#"{ key: }"#;
+    const INVALID_JSON5: &str = r"{ key: }";
 
     #[test]
     fn parses_valid_json5_without_errors() {

@@ -1,14 +1,15 @@
 import { useTranslation } from "react-i18next";
 
-import type { Settings, Theme } from "@/bindings";
+import type { Theme } from "@/bindings";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
+import type { EffectiveSettings } from "@/lib/settings-defaults";
 
 const THEME_OPTIONS: readonly Theme[] = ["system", "light", "dark"] as const;
 
 type Props = {
-  settings: Settings;
+  settings: EffectiveSettings;
   onThemeChange: (theme: Theme) => void;
   onOpacityChange: (opacity: number) => void;
 };

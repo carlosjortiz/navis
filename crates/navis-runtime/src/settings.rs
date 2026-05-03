@@ -1,11 +1,9 @@
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context as _, bail};
+use anyhow::Context as _;
 use serde::{Deserialize, Serialize};
 
 use crate::io::{read_json5, write_json5};
-
-pub const CURRENT_SCHEMA_VERSION: u32 = 1;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "lowercase")]
@@ -22,21 +20,46 @@ pub enum Language {
     Es,
 }
 
+/// Persistent user settings stored at `~/.navis/settings.json5`.
+///
+/// Forward-compatibility rules when evolving this struct:
+/// - **Adding a field**: include `#[serde(default = "fn")]` so old files
+///   that lack the field still deserialize cleanly.
+/// - **Renaming a field**: use `#[serde(alias = "old_name", rename = "new_name")]`
+///   so old files keep working; the next save rewrites with the new name.
+/// - **Removing a field**: just delete it from the struct. serde ignores
+///   unknown JSON fields by default.
+///
+/// For non-trivial migrations (type changes, splits, joins) see
+/// `carlosjortiz/navis-prd#37`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
 pub struct Settings {
+    #[serde(default = "default_theme")]
     pub theme: Theme,
+    #[serde(default = "default_language")]
     pub language: Language,
+    #[serde(default = "default_opacity")]
     pub opacity: f32,
-    pub schema_version: u32,
+}
+
+fn default_theme() -> Theme {
+    Theme::System
+}
+
+fn default_language() -> Language {
+    Language::En
+}
+
+fn default_opacity() -> f32 {
+    1.0
 }
 
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            theme: Theme::System,
-            language: Language::En,
-            opacity: 1.0,
-            schema_version: CURRENT_SCHEMA_VERSION,
+            theme: default_theme(),
+            language: default_language(),
+            opacity: default_opacity(),
         }
     }
 }
@@ -51,9 +74,8 @@ fn settings_path() -> anyhow::Result<PathBuf> {
 ///
 /// # Errors
 ///
-/// Returns an error if the home directory cannot be resolved, the file is
-/// malformed, or the persisted `schema_version` does not match the current
-/// version.
+/// Returns an error if the home directory cannot be resolved or the file is
+/// malformed.
 pub fn load_settings() -> anyhow::Result<Settings> {
     load_settings_at(&settings_path()?)
 }
@@ -76,19 +98,7 @@ pub(crate) fn load_settings_at(path: &Path) -> anyhow::Result<Settings> {
         return Ok(defaults);
     }
 
-    let settings: Settings = read_json5(path)
-        .with_context(|| format!("failed to load settings from {}", path.display()))?;
-
-    if settings.schema_version != CURRENT_SCHEMA_VERSION {
-        bail!(
-            "settings schema version mismatch in {}: file has {}, current is {}",
-            path.display(),
-            settings.schema_version,
-            CURRENT_SCHEMA_VERSION
-        );
-    }
-
-    Ok(settings)
+    read_json5(path).with_context(|| format!("failed to load settings from {}", path.display()))
 }
 
 pub(crate) fn save_settings_at(path: &Path, settings: &Settings) -> anyhow::Result<()> {
@@ -99,11 +109,6 @@ pub(crate) fn save_settings_at(path: &Path, settings: &Settings) -> anyhow::Resu
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn defaults_have_current_schema_version() {
-        assert_eq!(Settings::default().schema_version, CURRENT_SCHEMA_VERSION);
-    }
 
     #[test]
     fn defaults_returned_when_file_missing() {
@@ -125,7 +130,6 @@ mod tests {
             theme: "dark",
             language: "es",
             opacity: 0.85,
-            schema_version: 1,
         }"#;
         std::fs::write(&path, raw).unwrap();
 
@@ -136,28 +140,38 @@ mod tests {
                 theme: Theme::Dark,
                 language: Language::Es,
                 opacity: 0.85,
-                schema_version: 1,
             }
         );
     }
 
     #[test]
-    fn schema_version_mismatch_errors() {
+    fn defaults_filled_when_fields_missing() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("settings.json5");
+        let raw = r#"{ theme: "dark" }"#;
+        std::fs::write(&path, raw).unwrap();
+
+        let loaded = load_settings_at(&path).unwrap();
+        assert_eq!(loaded.theme, Theme::Dark);
+        assert_eq!(loaded.language, default_language());
+        assert!((loaded.opacity - default_opacity()).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn unknown_fields_are_ignored() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("settings.json5");
         let raw = r#"{
             theme: "system",
             language: "en",
             opacity: 1.0,
-            schema_version: 99,
+            legacy_field: "from-an-older-navis",
+            schema_version: 1,
         }"#;
         std::fs::write(&path, raw).unwrap();
 
-        let err = load_settings_at(&path).unwrap_err();
-        let msg = format!("{err:#}");
-        assert!(msg.contains("schema version mismatch"), "got: {msg}");
-        assert!(msg.contains("99"), "should mention file version: {msg}");
-        assert!(msg.contains('1'), "should mention current version: {msg}");
+        let loaded = load_settings_at(&path).unwrap();
+        assert_eq!(loaded, Settings::default());
     }
 
     #[test]

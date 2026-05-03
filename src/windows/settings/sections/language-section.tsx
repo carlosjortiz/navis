@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import type { Language, Settings } from "@/bindings";
+import type { Language } from "@/bindings";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -9,11 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { EffectiveSettings } from "@/lib/settings-defaults";
 
 const LANGUAGE_OPTIONS: readonly Language[] = ["en", "es"] as const;
 
 type Props = {
-  settings: Settings;
+  settings: EffectiveSettings;
   onLanguageChange: (language: Language) => void;
 };
 

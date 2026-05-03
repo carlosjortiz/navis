@@ -15,11 +15,24 @@ export type AppError = { kind: "notFound"; entity: string; name: string } | { ki
 
 export type Language = "en" | "es";
 
+/**
+ *  Persistent user settings stored at `~/.navis/settings.json5`.
+ * 
+ *  Forward-compatibility rules when evolving this struct:
+ *  - **Adding a field**: include `#[serde(default = "fn")]` so old files
+ *    that lack the field still deserialize cleanly.
+ *  - **Renaming a field**: use `#[serde(alias = "old_name", rename = "new_name")]`
+ *    so old files keep working; the next save rewrites with the new name.
+ *  - **Removing a field**: just delete it from the struct. serde ignores
+ *    unknown JSON fields by default.
+ * 
+ *  For non-trivial migrations (type changes, splits, joins) see
+ *  `carlosjortiz/navis-prd#37`.
+ */
 export type Settings = {
-	theme: Theme,
-	language: Language,
-	opacity: number,
-	schema_version: number,
+	theme?: Theme,
+	language?: Language,
+	opacity?: number,
 };
 
 export type Theme = "system" | "light" | "dark";

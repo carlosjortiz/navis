@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-import { commands, type Language, type Settings, type Theme } from "@/bindings";
+import { commands, type Language, type Theme } from "@/bindings";
 import { TitleBar } from "@/components/title-bar";
 import { Button } from "@/components/ui/button";
 import { useApplySettings } from "@/hooks/use-apply-settings";
+import type { EffectiveSettings } from "@/lib/settings-defaults";
 import { emitSettingsPreview } from "@/lib/settings-events";
 
 import { useDebouncedSave } from "./hooks/use-debounced-save";
@@ -16,16 +17,15 @@ const rootBackgroundStyle = (opacity: number): CSSProperties => ({
   backgroundColor: `color-mix(in oklab, var(--background) ${opacity * 100}%, transparent)`,
 });
 
-const settingsEqual = (a: Settings, b: Settings): boolean =>
+const settingsEqual = (a: EffectiveSettings, b: EffectiveSettings): boolean =>
   a.theme === b.theme &&
   a.language === b.language &&
-  a.opacity === b.opacity &&
-  a.schema_version === b.schema_version;
+  a.opacity === b.opacity;
 
 export default function App() {
   const { t } = useTranslation();
-  const [persisted, setPersisted] = useState<Settings | null>(null);
-  const [draft, setDraft] = useState<Settings | null>(null);
+  const [persisted, setPersisted] = useState<EffectiveSettings | null>(null);
+  const [draft, setDraft] = useState<EffectiveSettings | null>(null);
 
   useApplySettings(draft);
 
@@ -33,8 +33,9 @@ export default function App() {
     void (async () => {
       const result = await commands.getSettings();
       if (result.status === "ok") {
-        setPersisted(result.data);
-        setDraft(result.data);
+        const settings = result.data as EffectiveSettings;
+        setPersisted(settings);
+        setDraft(settings);
       }
     })();
   }, []);
@@ -43,7 +44,7 @@ export default function App() {
   // value once so any main window that was previewing the draft snaps back.
   // Stored via ref so the cleanup reads the latest state without re-running
   // the effect (which would prematurely revert in-progress edits).
-  const revertTargetRef = useRef<Settings | null>(null);
+  const revertTargetRef = useRef<EffectiveSettings | null>(null);
   useEffect(() => {
     revertTargetRef.current =
       persisted !== null && draft !== null && !settingsEqual(persisted, draft)
@@ -58,7 +59,7 @@ export default function App() {
     };
   }, []);
 
-  const debouncedEmit = useDebouncedSave((next: Settings) => {
+  const debouncedEmit = useDebouncedSave((next: EffectiveSettings) => {
     void emitSettingsPreview(next);
   }, 150);
 

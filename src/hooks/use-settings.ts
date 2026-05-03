@@ -1,10 +1,11 @@
 import { useSyncExternalStore } from "react";
 
-import { commands, type Settings } from "@/bindings";
+import { commands } from "@/bindings";
+import type { EffectiveSettings } from "@/lib/settings-defaults";
 import { onSettingsPreview } from "@/lib/settings-events";
 
 const subscribers = new Set<() => void>();
-let snapshot: Settings | null = null;
+let snapshot: EffectiveSettings | null = null;
 
 const notify = () => {
   for (const cb of subscribers) cb();
@@ -15,13 +16,13 @@ void (async () => {
   // Skip if a preview event already populated the snapshot — it carries fresher
   // state (the Settings window started editing before getSettings resolved).
   if (result.status === "ok" && snapshot === null) {
-    snapshot = result.data;
+    snapshot = result.data as EffectiveSettings;
     notify();
   }
 })();
 
 void onSettingsPreview((next) => {
-  snapshot = next;
+  snapshot = next as EffectiveSettings;
   notify();
 });
 
@@ -34,6 +35,6 @@ const subscribe = (cb: () => void) => {
 
 const getSnapshot = () => snapshot;
 
-export function useSettings(): Settings | null {
+export function useSettings(): EffectiveSettings | null {
   return useSyncExternalStore(subscribe, getSnapshot);
 }

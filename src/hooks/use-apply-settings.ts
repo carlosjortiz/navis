@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 
-import type { Settings } from "@/bindings";
 import i18n from "@/i18n";
+import type { EffectiveSettings } from "@/lib/settings-defaults";
 
 const setDark = (isDark: boolean) => {
   document.documentElement.classList.toggle("dark", isDark);
 };
 
-export function useApplySettings(settings: Settings | null): void {
+export function useApplySettings(settings: EffectiveSettings | null): void {
   useEffect(() => {
     if (settings === null) return;
     if (settings.theme === "dark") {

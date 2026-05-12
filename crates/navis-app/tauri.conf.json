@@ -15,8 +15,8 @@
         "label": "navis-ws-selector",
         "title": "Navis — Workspace Selector",
         "url": "workspace-selector.html",
-        "width": 600,
-        "height": 400,
+        "width": 800,
+        "height": 600,
         "decorations": false,
         "transparent": true,
         "visible": true

@@ -28,6 +28,21 @@
     "save": "Guardar",
     "cancel": "Cancelar"
   },
+  "workspaceSelector": {
+    "title": "Workspaces",
+    "empty": {
+      "heading": "Aún no hay workspaces",
+      "body": "Creá tu primer workspace para empezar.",
+      "createCta": "Crear workspace"
+    },
+    "card": {
+      "openButton": "Abrir",
+      "noDescription": "Sin descripción"
+    },
+    "errors": {
+      "loadFailed": "No se pudieron cargar los workspaces"
+    }
+  },
   "settings": {
     "title": "Configuración",
     "loading": "Cargando configuración…",

@@ -1,18 +1,16 @@
-import { invoke } from "@tauri-apps/api/core"
 import { useTranslation } from "react-i18next"
 import { TitleBar } from "@/components/title-bar"
 import { Button } from "@/components/ui/button"
-import { formatAppError } from "@/lib/app-error"
+import { commands } from "@/bindings"
+import { notifyError } from "@/lib/notify"
 
 export default function App() {
   const { t } = useTranslation()
 
   const handleOpenDemo = async () => {
-    try {
-      await invoke("open_workspace", { slug: "demo" })
-    } catch (err) {
-      // Placeholder until proper toast UI lands; alert is sufficient for the smoke path.
-      alert(formatAppError(err, t))
+    const result = await commands.openWorkspace("demo")
+    if (result.status === "error") {
+      notifyError(result.error, t)
     }
   }
 

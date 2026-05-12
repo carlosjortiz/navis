@@ -5,12 +5,23 @@ use serde::{Deserialize, Serialize};
 
 use crate::io::{read_json5, write_json5};
 
+/// Internal on-disk shape for a workspace — keeps `name` out of the file.
+///
+/// Disk I/O always goes through this struct so that `Workspace` (the public
+/// IPC type) can serialize all its fields without side-effects on the file.
+#[derive(Debug, Default, Serialize, Deserialize)]
+struct WorkspaceFile {
+    #[serde(default)]
+    description: Option<String>,
+}
+
 /// A named container for related requests, stored as a subdirectory under
 /// `~/.navis/workspaces/<name>/`.
 ///
 /// The `name` field is NOT written to `workspace.json5` — it is derived from
-/// the directory name at load time. Only `description` (and any future fields)
-/// live on disk.
+/// the directory name at load time and the separation is enforced by using the
+/// private `WorkspaceFile` struct for all disk reads and writes. Only
+/// `description` (and any future fields) live on disk.
 ///
 /// Forward-compatibility rules when evolving this struct:
 /// - **Adding a field**: include `#[serde(default)]` so files that pre-date the
@@ -23,9 +34,7 @@ use crate::io::{read_json5, write_json5};
 /// For non-trivial migrations (type-change, split, join) see navis-prd#37.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
 pub struct Workspace {
-    /// The directory name under `~/.navis/workspaces/`. Populated at load time;
-    /// never written to disk.
-    #[serde(default, skip_serializing)]
+    /// The directory name under `~/.navis/workspaces/`. Populated at load time.
     pub name: String,
     #[serde(default)]
     pub description: Option<String>,
@@ -187,9 +196,9 @@ pub(crate) fn list_workspaces_at(root: &Path) -> anyhow::Result<Vec<Workspace>> 
             })?
             .to_owned();
 
-        let description = read_json5::<Workspace>(&workspace_file(root, &name))
+        let description = read_json5::<WorkspaceFile>(&workspace_file(root, &name))
             .ok()
-            .and_then(|w| w.description);
+            .and_then(|f| f.description);
 
         workspaces.push(Workspace { name, description });
     }
@@ -213,12 +222,13 @@ pub(crate) fn create_workspace_at(
     std::fs::create_dir_all(&dir)
         .with_context(|| format!("failed to create workspace directory {}", dir.display()))?;
 
-    let data = Workspace {
-        name: String::new(), // skipped during serialization
-        description: description.map(String::from),
-    };
-    write_json5(&workspace_file(root, name), &data)
-        .with_context(|| format!("failed to write workspace.json5 for {name:?}"))?;
+    write_json5(
+        &workspace_file(root, name),
+        &WorkspaceFile {
+            description: description.map(String::from),
+        },
+    )
+    .with_context(|| format!("failed to write workspace.json5 for {name:?}"))?;
 
     Ok(Workspace {
         name: name.to_owned(),
@@ -243,9 +253,9 @@ pub(crate) fn rename_workspace_at(root: &Path, old: &str, new: &str) -> anyhow::
         .with_context(|| format!("failed to rename {old:?} to {new:?}"))?;
 
     // Re-read the description from the now-renamed directory.
-    let description = read_json5::<Workspace>(&workspace_file(root, new))
+    let description = read_json5::<WorkspaceFile>(&workspace_file(root, new))
         .ok()
-        .and_then(|w| w.description);
+        .and_then(|f| f.description);
 
     Ok(Workspace {
         name: new.to_owned(),

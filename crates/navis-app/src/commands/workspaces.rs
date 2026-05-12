@@ -1,4 +1,5 @@
 use anyhow::Context as _;
+use navis_runtime::workspace::Workspace;
 use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 
 use crate::error::CommandResult;
@@ -32,4 +33,28 @@ pub async fn open_workspace(app: AppHandle, slug: String) -> CommandResult<()> {
     }
 
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn list_workspaces() -> CommandResult<Vec<Workspace>> {
+    navis_runtime::workspace::list_workspaces().map_err(Into::into)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn create_workspace(name: String, description: Option<String>) -> CommandResult<Workspace> {
+    navis_runtime::workspace::create_workspace(&name, description.as_deref()).map_err(Into::into)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn rename_workspace(old: String, new_name: String) -> CommandResult<Workspace> {
+    navis_runtime::workspace::rename_workspace(&old, &new_name).map_err(Into::into)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn delete_workspace(name: String) -> CommandResult<()> {
+    navis_runtime::workspace::delete_workspace(&name).map_err(Into::into)
 }

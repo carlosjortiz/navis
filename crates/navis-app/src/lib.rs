@@ -20,6 +20,10 @@ pub fn run() {
 
     let specta_builder = Builder::<tauri::Wry>::new().commands(collect_commands![
         commands::workspaces::open_workspace,
+        commands::workspaces::list_workspaces,
+        commands::workspaces::create_workspace,
+        commands::workspaces::rename_workspace,
+        commands::workspaces::delete_workspace,
         commands::settings::open_settings,
         commands::settings::get_settings,
         commands::settings::save_settings,

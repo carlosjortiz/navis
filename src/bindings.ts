@@ -5,6 +5,10 @@ import { invoke as __TAURI_INVOKE } from "@tauri-apps/api/core";
 /** Commands */
 export const commands = {
 	openWorkspace: (slug: string) => typedError<null, AppError>(__TAURI_INVOKE("open_workspace", { slug })),
+	listWorkspaces: () => typedError<Workspace[], AppError>(__TAURI_INVOKE("list_workspaces")),
+	createWorkspace: (name: string, description: string | null) => typedError<Workspace, AppError>(__TAURI_INVOKE("create_workspace", { name, description })),
+	renameWorkspace: (old: string, newName: string) => typedError<Workspace, AppError>(__TAURI_INVOKE("rename_workspace", { old, newName })),
+	deleteWorkspace: (name: string) => typedError<null, AppError>(__TAURI_INVOKE("delete_workspace", { name })),
 	openSettings: () => typedError<null, AppError>(__TAURI_INVOKE("open_settings")),
 	getSettings: () => typedError<Settings, AppError>(__TAURI_INVOKE("get_settings")),
 	saveSettings: (settings: Settings) => typedError<null, AppError>(__TAURI_INVOKE("save_settings", { settings })),
@@ -36,6 +40,31 @@ export type Settings = {
 };
 
 export type Theme = "system" | "light" | "dark";
+
+/**
+ *  A named container for related requests, stored as a subdirectory under
+ *  `~/.navis/workspaces/<name>/`.
+ * 
+ *  The `name` field is NOT written to `workspace.json5` — it is derived from
+ *  the directory name at load time and the separation is enforced by using the
+ *  private `WorkspaceFile` struct for all disk reads and writes. Only
+ *  `description` (and any future fields) live on disk.
+ * 
+ *  Forward-compatibility rules when evolving this struct:
+ *  - **Adding a field**: include `#[serde(default)]` so files that pre-date the
+ *    field still deserialize cleanly.
+ *  - **Renaming a field**: use `#[serde(alias = "old_name")]` so old files keep
+ *    working; the next save rewrites with the new name.
+ *  - **Removing a field**: just delete it. serde ignores unknown JSON fields by
+ *    default.
+ * 
+ *  For non-trivial migrations (type-change, split, join) see navis-prd#37.
+ */
+export type Workspace = {
+	// The directory name under `~/.navis/workspaces/`. Populated at load time.
+	name: string,
+	description?: string | null,
+};
 
 /* Tauri Specta runtime */
 async function typedError<T, E>(result: Promise<T>): Promise<{ status: "ok"; data: T } | { status: "error"; error: E }> {

@@ -29,15 +29,63 @@
     "cancel": "Cancelar"
   },
   "workspaceSelector": {
-    "title": "Workspaces",
     "empty": {
       "heading": "Aún no hay workspaces",
       "body": "Creá tu primer workspace para empezar.",
       "createCta": "Crear workspace"
     },
     "card": {
-      "openButton": "Abrir",
       "noDescription": "Sin descripción"
+    },
+    "header": {
+      "title": "Workspaces"
+    },
+    "actions": {
+      "create": "Crear workspace",
+      "rename": "Renombrar",
+      "delete": "Eliminar"
+    },
+    "dialog": {
+      "create": {
+        "title": "Crear workspace",
+        "submit": "Crear"
+      },
+      "rename": {
+        "title": "Renombrar workspace",
+        "submit": "Renombrar"
+      },
+      "cancel": "Cancelar"
+    },
+    "form": {
+      "name": {
+        "label": "Nombre",
+        "placeholder": "mi-workspace"
+      },
+      "description": {
+        "label": "Descripción",
+        "placeholder": "¿Para qué es este workspace?",
+        "optional": "Opcional"
+      }
+    },
+    "validation": {
+      "empty": "El nombre no puede estar vacío.",
+      "tooLong": "El nombre debe tener 255 caracteres o menos.",
+      "forbiddenChar": "El nombre no puede contener < > : \" / \\ | ? * ni null.",
+      "leadingTrailingSpace": "El nombre no puede empezar ni terminar con espacio.",
+      "leadingTrailingDot": "El nombre no puede empezar ni terminar con punto.",
+      "whitespaceOnly": "El nombre no puede ser solo espacios.",
+      "reservedName": "El nombre está reservado por el sistema operativo."
+    },
+    "delete": {
+      "title": "Eliminar workspace",
+      "body": "¿Seguro que querés eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
+    },
+    "toast": {
+      "created": "Workspace creado.",
+      "renamed": "Workspace renombrado.",
+      "deleted": "Workspace eliminado."
     },
     "errors": {
       "loadFailed": "No se pudieron cargar los workspaces"

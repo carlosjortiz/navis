@@ -29,15 +29,63 @@
     "cancel": "Cancel"
   },
   "workspaceSelector": {
-    "title": "Workspaces",
     "empty": {
       "heading": "No workspaces yet",
       "body": "Create your first workspace to get started.",
       "createCta": "Create workspace"
     },
     "card": {
-      "openButton": "Open",
       "noDescription": "No description"
+    },
+    "header": {
+      "title": "Workspaces"
+    },
+    "actions": {
+      "create": "Create workspace",
+      "rename": "Rename",
+      "delete": "Delete"
+    },
+    "dialog": {
+      "create": {
+        "title": "Create workspace",
+        "submit": "Create"
+      },
+      "rename": {
+        "title": "Rename workspace",
+        "submit": "Rename"
+      },
+      "cancel": "Cancel"
+    },
+    "form": {
+      "name": {
+        "label": "Name",
+        "placeholder": "my-workspace"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "What is this workspace for?",
+        "optional": "Optional"
+      }
+    },
+    "validation": {
+      "empty": "Name cannot be empty.",
+      "tooLong": "Name must be 255 characters or fewer.",
+      "forbiddenChar": "Name cannot contain < > : \" / \\ | ? * or null.",
+      "leadingTrailingSpace": "Name cannot start or end with a space.",
+      "leadingTrailingDot": "Name cannot start or end with a dot.",
+      "whitespaceOnly": "Name cannot be only whitespace.",
+      "reservedName": "Name is reserved by the operating system."
+    },
+    "delete": {
+      "title": "Delete workspace",
+      "body": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "toast": {
+      "created": "Workspace created.",
+      "renamed": "Workspace renamed.",
+      "deleted": "Workspace deleted."
     },
     "errors": {
       "loadFailed": "Could not load workspaces"

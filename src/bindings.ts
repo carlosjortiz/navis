@@ -4,11 +4,12 @@ import { invoke as __TAURI_INVOKE } from "@tauri-apps/api/core";
 
 /** Commands */
 export const commands = {
-	openWorkspace: (slug: string) => typedError<null, AppError>(__TAURI_INVOKE("open_workspace", { slug })),
+	openWorkspace: (name: string) => typedError<null, AppError>(__TAURI_INVOKE("open_workspace", { name })),
 	listWorkspaces: () => typedError<Workspace[], AppError>(__TAURI_INVOKE("list_workspaces")),
 	createWorkspace: (name: string, description: string | null) => typedError<Workspace, AppError>(__TAURI_INVOKE("create_workspace", { name, description })),
 	renameWorkspace: (old: string, newName: string) => typedError<Workspace, AppError>(__TAURI_INVOKE("rename_workspace", { old, newName })),
 	deleteWorkspace: (name: string) => typedError<null, AppError>(__TAURI_INVOKE("delete_workspace", { name })),
+	getWorkspace: (name: string) => typedError<Workspace, AppError>(__TAURI_INVOKE("get_workspace", { name })),
 	openSettings: () => typedError<null, AppError>(__TAURI_INVOKE("open_settings")),
 	getSettings: () => typedError<Settings, AppError>(__TAURI_INVOKE("get_settings")),
 	saveSettings: (settings: Settings) => typedError<null, AppError>(__TAURI_INVOKE("save_settings", { settings })),

@@ -10,7 +10,8 @@
   },
   "app": {
     "title": "Hello Navis",
-    "subtitle": "Tailwind 4 + custom theme + shadcn/ui + Lucide + Zustand + i18next working."
+    "subtitle": "Tailwind 4 + custom theme + shadcn/ui + Lucide + Zustand + i18next working.",
+    "titleBarFallback": "Navis"
   },
   "sections": {
     "standaloneIcons": "Standalone icons",

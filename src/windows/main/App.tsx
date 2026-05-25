@@ -8,6 +8,7 @@ import { TitleBar } from "@/components/title-bar"
 import { useApplySettings } from "@/hooks/use-apply-settings"
 import { useSettings } from "@/hooks/use-settings"
 import { useCounterStore } from "@/stores/counter-store"
+import { useCurrentWorkspace } from "./hooks/use-current-workspace"
 
 const SAMPLE_JSON = `{
   "name": "demo-workspace",
@@ -23,6 +24,8 @@ export default function App() {
 
   const settings = useSettings()
   useApplySettings(settings)
+
+  const workspace = useCurrentWorkspace()
 
   const count = useCounterStore((state) => state.count)
   const increment = useCounterStore((state) => state.increment)
@@ -40,7 +43,7 @@ export default function App() {
       style={rootStyle}
       className="flex flex-col h-screen bg-[color-mix(in_oklab,var(--background)_calc(var(--app-opacity)*100%),transparent)] backdrop-blur-md font-sans"
     >
-      <TitleBar />
+      <TitleBar workspaceName={workspace?.name} />
       <main className="flex-1 overflow-auto flex items-start justify-center p-8">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full space-y-6">
         <div>

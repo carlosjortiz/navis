@@ -1,4 +1,5 @@
 allowBuilds:
+  esbuild: true
   msw: true
 # pnpm settings for the navis project (single-package, no `packages:` field).
 #

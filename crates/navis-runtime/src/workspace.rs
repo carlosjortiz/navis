@@ -108,6 +108,20 @@ pub fn delete_workspace(name: &str) -> anyhow::Result<()> {
     delete_workspace_at(&workspaces_root()?, name)
 }
 
+/// Loads a single workspace by name.
+///
+/// A missing `workspace.json5` (or one missing the `description` field) yields
+/// `description: None`. A syntactically malformed `workspace.json5` is treated
+/// as corruption and surfaced as an error so the caller can inform the user.
+///
+/// # Errors
+///
+/// Returns an error if the workspace directory does not exist or if
+/// `workspace.json5` exists but fails to parse.
+pub fn load_workspace(name: &str) -> anyhow::Result<Workspace> {
+    load_workspace_at(&workspaces_root()?, name)
+}
+
 /// Validates that `name` is acceptable as a workspace (and filesystem)
 /// directory name.
 ///
@@ -271,6 +285,27 @@ pub(crate) fn delete_workspace_at(root: &Path, name: &str) -> anyhow::Result<()>
 
     std::fs::remove_dir_all(&dir)
         .with_context(|| format!("failed to remove workspace directory {}", dir.display()))
+}
+
+pub(crate) fn load_workspace_at(root: &Path, name: &str) -> anyhow::Result<Workspace> {
+    let dir = workspace_dir(root, name);
+    if !dir.is_dir() {
+        anyhow::bail!("workspace {name:?} does not exist");
+    }
+
+    let file = workspace_file(root, name);
+    let description = if file.exists() {
+        read_json5::<WorkspaceFile>(&file)
+            .with_context(|| format!("failed to parse workspace.json5 for {name:?}"))?
+            .description
+    } else {
+        None
+    };
+
+    Ok(Workspace {
+        name: name.to_owned(),
+        description,
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -522,6 +557,62 @@ mod tests {
                 "expected error for whitespace-only name {name:?}, but got Ok"
             );
         }
+    }
+
+    // ------------------------------------------------------------------
+    // load_workspace
+    // ------------------------------------------------------------------
+
+    #[test]
+    fn load_workspace_returns_workspace_with_description() {
+        let home = fake_home();
+        let root = home.path().join("workspaces");
+
+        create_workspace_at(&root, "delta", Some("hello")).unwrap();
+        let ws = load_workspace_at(&root, "delta").unwrap();
+
+        assert_eq!(ws.name, "delta");
+        assert_eq!(ws.description.as_deref(), Some("hello"));
+    }
+
+    #[test]
+    fn load_workspace_returns_none_description_when_json_file_missing() {
+        let home = fake_home();
+        let root = home.path().join("workspaces");
+        let dir = root.join("epsilon");
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let ws = load_workspace_at(&root, "epsilon").unwrap();
+        assert_eq!(ws.name, "epsilon");
+        assert_eq!(ws.description, None);
+    }
+
+    #[test]
+    fn load_workspace_fails_when_dir_missing() {
+        let home = fake_home();
+        let root = home.path().join("workspaces");
+        std::fs::create_dir_all(&root).unwrap();
+
+        let err = load_workspace_at(&root, "ghost").unwrap_err();
+        assert!(
+            format!("{err:#}").contains("does not exist"),
+            "unexpected error: {err:#}"
+        );
+    }
+
+    #[test]
+    fn load_workspace_fails_on_malformed_json5() {
+        let home = fake_home();
+        let root = home.path().join("workspaces");
+        let dir = root.join("zeta");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(workspace_file(&root, "zeta"), b"{ not valid json5 ,,,").unwrap();
+
+        let err = load_workspace_at(&root, "zeta").unwrap_err();
+        assert!(
+            format!("{err:#}").contains("workspace.json5"),
+            "unexpected error: {err:#}"
+        );
     }
 
     #[test]

@@ -6,8 +6,12 @@ use crate::error::CommandResult;
 
 #[tauri::command]
 #[specta::specta]
-pub async fn open_workspace(app: AppHandle, slug: String) -> CommandResult<()> {
-    let label = format!("navis-{slug}");
+pub async fn open_workspace(app: AppHandle, name: String) -> CommandResult<()> {
+    // Validate existence on disk before any window-side work.
+    navis_runtime::workspace::load_workspace(&name)
+        .with_context(|| format!("failed to load workspace {name:?}"))?;
+
+    let label = format!("navis-{name}");
 
     if let Some(existing) = app.get_webview_window(&label) {
         existing.unminimize().context("failed to unminimize workspace window")?;
@@ -16,10 +20,15 @@ pub async fn open_workspace(app: AppHandle, slug: String) -> CommandResult<()> {
         return Ok(());
     }
 
+    // Pass the workspace name to the new window via URL query so the FE can
+    // request its context. URL encoding covers spaces, Unicode, and any other
+    // filesystem-safe character allowed in workspace names.
+    let url_path = format!("index.html?workspace={}", urlencoding::encode(&name));
+
     // Build the main window first; closing the selector before build() returns
     // can trigger Tauri's "last window destroyed" exit if the timing is unlucky.
-    WebviewWindowBuilder::new(&app, &label, WebviewUrl::App("index.html".into()))
-        .title(format!("Navis — {slug}"))
+    WebviewWindowBuilder::new(&app, &label, WebviewUrl::App(url_path.into()))
+        .title(format!("Navis — {name}"))
         .inner_size(1280.0, 800.0)
         .decorations(false)
         .transparent(true)
@@ -33,6 +42,12 @@ pub async fn open_workspace(app: AppHandle, slug: String) -> CommandResult<()> {
     }
 
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_workspace(name: String) -> CommandResult<Workspace> {
+    navis_runtime::workspace::load_workspace(&name).map_err(Into::into)
 }
 
 #[tauri::command]

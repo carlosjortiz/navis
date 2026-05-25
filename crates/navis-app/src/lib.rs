@@ -24,6 +24,7 @@ pub fn run() {
         commands::workspaces::create_workspace,
         commands::workspaces::rename_workspace,
         commands::workspaces::delete_workspace,
+        commands::workspaces::get_workspace,
         commands::settings::open_settings,
         commands::settings::get_settings,
         commands::settings::save_settings,

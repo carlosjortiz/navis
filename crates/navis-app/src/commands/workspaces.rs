@@ -1,17 +1,24 @@
 use anyhow::Context as _;
 use navis_runtime::workspace::Workspace;
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter as _, Manager as _, State, WebviewUrl, WebviewWindowBuilder};
 
 use crate::error::CommandResult;
+use crate::lifecycle::{SELECTOR_LABEL, WORKSPACE_LABEL_PREFIX};
+use crate::lifecycle::window_event::OPEN_WORKSPACES_EVENT;
+use crate::state::AppState;
 
 #[tauri::command]
 #[specta::specta]
-pub async fn open_workspace(app: AppHandle, name: String) -> CommandResult<()> {
+pub async fn open_workspace(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    name: String,
+) -> CommandResult<()> {
     // Validate existence on disk before any window-side work.
     navis_runtime::workspace::load_workspace(&name)
         .with_context(|| format!("failed to load workspace {name:?}"))?;
 
-    let label = format!("navis-{name}");
+    let label = format!("{WORKSPACE_LABEL_PREFIX}{name}");
 
     if let Some(existing) = app.get_webview_window(&label) {
         existing.unminimize().context("failed to unminimize workspace window")?;
@@ -35,13 +42,27 @@ pub async fn open_workspace(app: AppHandle, name: String) -> CommandResult<()> {
         .build()
         .context("failed to build workspace window")?;
 
-    if let Some(selector) = app.get_webview_window("navis-ws-selector") {
+    let snapshot: Vec<String> = {
+        let mut open = state.open_workspaces.lock();
+        open.insert(name.clone());
+        open.iter().cloned().collect()
+    };
+    let _ = app.emit(OPEN_WORKSPACES_EVENT, &snapshot);
+
+    if let Some(selector) = app.get_webview_window(SELECTOR_LABEL) {
         selector
             .close()
             .context("failed to close workspace selector")?;
     }
 
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_open_workspaces(state: State<'_, AppState>) -> CommandResult<Vec<String>> {
+    let snapshot: Vec<String> = state.open_workspaces.lock().iter().cloned().collect();
+    Ok(snapshot)
 }
 
 #[tauri::command]

@@ -30,7 +30,7 @@ import {
   workspaceRenameSchema,
   type WorkspaceCreateValues,
   type WorkspaceRenameValues,
-} from "../schemas/workspace-form"
+} from "./workspace-form.schema"
 
 export type WorkspaceFormDialogProps =
   | {

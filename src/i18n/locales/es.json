@@ -92,6 +92,11 @@
       "loadFailed": "No se pudieron cargar los workspaces"
     }
   },
+  "workspaceSwitcher": {
+    "triggerLabel": "Cambiar workspace",
+    "newWorkspace": "Nuevo workspace",
+    "openLabel": "Abiertos"
+  },
   "settings": {
     "title": "Configuración",
     "loading": "Cargando configuración…",

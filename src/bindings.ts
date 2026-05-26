@@ -6,6 +6,7 @@ import { invoke as __TAURI_INVOKE } from "@tauri-apps/api/core";
 export const commands = {
 	openWorkspace: (name: string) => typedError<null, AppError>(__TAURI_INVOKE("open_workspace", { name })),
 	listWorkspaces: () => typedError<Workspace[], AppError>(__TAURI_INVOKE("list_workspaces")),
+	getOpenWorkspaces: () => typedError<string[], AppError>(__TAURI_INVOKE("get_open_workspaces")),
 	createWorkspace: (name: string, description: string | null) => typedError<Workspace, AppError>(__TAURI_INVOKE("create_workspace", { name, description })),
 	renameWorkspace: (old: string, newName: string) => typedError<Workspace, AppError>(__TAURI_INVOKE("rename_workspace", { old, newName })),
 	deleteWorkspace: (name: string) => typedError<null, AppError>(__TAURI_INVOKE("delete_workspace", { name })),

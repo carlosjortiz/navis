@@ -4,12 +4,12 @@ import { Loader2 } from "lucide-react"
 import { TitleBar } from "@/components/title-bar"
 import { commands, type Workspace } from "@/bindings"
 import { notifyError } from "@/lib/notify"
-import { useWorkspaces } from "./hooks/use-workspaces"
+import { useWorkspaces } from "@/features/workspaces/use-workspaces"
+import { WorkspaceFormDialog } from "@/features/workspaces/workspace-form-dialog"
+import { DeleteWorkspaceAlert } from "@/features/workspaces/delete-workspace-alert"
 import { EmptyState } from "./components/empty-state"
 import { WorkspaceList } from "./components/workspace-list"
 import { WorkspaceHeader } from "./components/workspace-header"
-import { WorkspaceFormDialog } from "./components/workspace-form-dialog"
-import { DeleteWorkspaceAlert } from "./components/delete-workspace-alert"
 
 export default function App() {
   const { t } = useTranslation()

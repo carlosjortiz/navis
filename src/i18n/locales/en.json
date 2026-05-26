@@ -92,6 +92,11 @@
       "loadFailed": "Could not load workspaces"
     }
   },
+  "workspaceSwitcher": {
+    "triggerLabel": "Switch workspace",
+    "newWorkspace": "New workspace",
+    "openLabel": "Open"
+  },
   "settings": {
     "title": "Settings",
     "loading": "Loading settings…",

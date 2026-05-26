@@ -2176,6 +2176,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "navis-runtime",
+ "parking_lot",
  "serde",
  "serde_json",
  "specta",
